@@ -56,11 +56,11 @@ module.exports = {
     execute(Client, message, args, Discord, cmd){
         axios.get(`https://e621.net/posts.json?tags=${encodeURI(args.join(" "))}`, {headers: {'User-Agent': 'e6-f/1.0'}})
     .then(response => {
-        const posts = response.data["posts"];
+        let posts = response.data["posts"];
 
-        posts.filter(post => {
-          for (let tag in post.tags["general"]) {
-            if (blacklist[post["tags"]["general"]]) return false;
+        posts = posts.filter(post => {
+          for (let tag of post.tags["general"]) {
+            if (blacklist[tag]) return false;
           }
           return true
         })
@@ -76,6 +76,7 @@ module.exports = {
                 .setImage(post.file.url)
                 .setTimestamp()
             message.channel.send({embed})
+            //console.log(post.tags)
         } else {
             message.channel.send('Use this command in a NSFW channel');
         }
