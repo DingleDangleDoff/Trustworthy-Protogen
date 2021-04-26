@@ -7,12 +7,12 @@ require('dotenv').config();
 Client.commands = new Discord.Collection();
 Client.events = new Discord.Collection();
 
+module.exports = Client;
 ['Command_handler', 'Event_handler'].forEach(handler =>{
     require(`./Handlers/${handler}`)(Client, Discord);
 })
 
 Client.on('ready', () =>{
-    module.exports = Client
 
     Client.user.setActivity('You are a homosexual');
 });

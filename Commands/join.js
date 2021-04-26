@@ -1,30 +1,27 @@
+const Client = require("../index.js")
+Client.on("message", message => {})
 module.exports = {
     name: 'join',
     aliases: ['leave'],
     description: "Join an anonymous dm group with anyone else who is in it",
     async execute(Client, message, args, Discord, cmd){
-        if (cmd === 'join') {
+        const users = new Map()
+        if (cmd === 'join'){
             if (message.guild === null) {
+                users.set(message.author.id, message.user);
                 message.channel.send(`Joined dm group. You are user **${'Placeholder'}**, there are currently **${'Placeholder'}** people in the group, use <leave to leave`);
-                let filter = m => !m.author.bot;
-                let collector = new Discord.MessageCollector(message.channel,filter);
-                collector.on('collect', (message,col) => {
-                    console.log(message.content);
-                    
-                })
-
-        }else {
-            message.channel.send('You must be in dms to use this');
-        }
-           //----------------------------LEAVE---------------------------- 
-        } else if (cmd === 'leave') {
-            if (message.guild === null) {
+                console.log(users)
+            } else {
+                message.channel.send('You must be in dm to use this command')
+            }
+        } else if (cmd === 'leave'){ //Leave
+            if (message.guild === null){
+                users.delete(message.author.id);
                 message.channel.send('Leaving dm group');
-                collector.stop();
-
-        }else {
-            message.channel.send('You must be in dms to use this');
-        }
+                console.log(users)
+            } else {
+                message.channel.send('You must be in dm to use this command')
+            }
         }
     }
 }
