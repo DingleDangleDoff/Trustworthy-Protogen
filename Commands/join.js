@@ -1,40 +1,72 @@
 const Client = require("../index.js")
-Client.on("message", message => {})
+Client.on("message", async message => {
+    if (message.channel.type !== "dm") return; // not in dm
+    if (!users.has(message.author.id)) return; // user is not in chatroom
+    if (message.content.startsWith("<")) return;
+    broadcastToGroup(users.get(message.channel.id),`**${users.get(message.author.id)}:** ` + message.content)
+})
+const users = new Map()
+const letters = new Map([
+    ['Γ', false],
+    ['Δ', false],
+    ['Θ', false],
+    ['Λ', false],
+    ['Ξ', false],
+    ['Π', false],
+    ['Σ', false],
+    ['Φ', false],
+    ['Ψ', false],
+    ['Ω', false]
+])
+function freeLetter(letter) {
+    if (!letters.has(letter)) return false;
+    letters.set(letter, false )
+}
+
+function getRandomLetter() {
+    available = []
+    for (let [letter, taken] of letters) {
+      if (!taken) available.push(letter)
+    }
+    let letter = available[Math.floor(Math.random()*available.length)]
+
+    letters.set(letter, true)
+
+    return letter || false
+}
+
+async function broadcastToGroup( who, message ) {
+    for (let [userId] of users) {
+        let user = await Client.users.fetch(userId);
+        let dmChannel = await user.createDM()
+
+           dmChannel.send( `${who ? `**${who || "UNKNOWN"}**: ` : ""}${message}` ).catch()
+       }
+}
 module.exports = {
     name: 'join',
     aliases: ['leave'],
     description: "Join an anonymous dm group with anyone else who is in it",
     async execute(Client, message, args, Discord, cmd){
-        const users = new Map()
-        const letters = new Map([
-            ['Γ', false],
-            ['Δ', false],
-            ['Θ', false],
-            ['Λ', false],
-            ['Ξ', false],
-            ['Π', false],
-            ['Σ', false],
-            ['Φ', false],
-            ['Ψ', false],
-            ['Ω', false]
-        ])
-        if (cmd === 'join'){
-            if (message.guild === null) {
-                users.set(message.author.id, message.user);
-                message.channel.send(`Joined dm group. You are user **${'Placeholder'}**, there are currently **${users.size}** people in the group, use <leave to leave`);
-                console.log(users)
-            } else {
-                message.channel.send('You must be in dm to use this command')
-            }
-        } else if (cmd === 'leave'){ //Leave
-            if (message.guild === null){
-                users.delete(message.author.id);
-                message.channel.send('Leaving dm group');
-                console.log(users)
-            } else {
-                message.channel.send('You must be in dm to use this command')
-            }
+        if (message.channel.type !== "dm") return message.reply("You must be in a DM to use this command");
+        if (cmd === "join") {
+            if (users.has(message.author.id)) return; // user is already in
+            if (users.size >= 10) return; // full
+            
+            let letter = getRandomLetter();
+            if (!letter) return; // no letter available (bug!)
+            users.set(message.author.id, letter)
+            message.channel.send(`Joined dm group. You are user **${letter}**, there are currently **${users.size}** people in the group, use <leave to leave`)
+            broadcastToGroup(undefined, `__**${letter}** has joined the group chat.__`)
+        
+        } else if (cmd === "leave") {
+            if (!users.has(message.author.id)) return message.channel.send('You need to join first');
+            let letter = users.get(message.author.id)
+            message.channel.send('Leaving dm')
+            freeLetter( letter )
+            users.delete(message.author.id)
+            broadcastToGroup(undefined, `__**${letter}** has left the group chat.__`)
         }
     }
 }
-//WIP
+//Mega help by jakey (If not pretty much all him)
