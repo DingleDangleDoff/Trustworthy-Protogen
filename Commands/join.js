@@ -21,7 +21,7 @@ module.exports = {
         if (cmd === 'join'){
             if (message.guild === null) {
                 users.set(message.author.id, message.user);
-                message.channel.send(`Joined dm group. You are user **${'Placeholder'}**, there are currently **${'Placeholder'}** people in the group, use <leave to leave`);
+                message.channel.send(`Joined dm group. You are user **${'Placeholder'}**, there are currently **${users.size}** people in the group, use <leave to leave`);
                 console.log(users)
             } else {
                 message.channel.send('You must be in dm to use this command')
