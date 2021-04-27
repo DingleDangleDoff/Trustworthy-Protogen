@@ -6,6 +6,18 @@ module.exports = {
     description: "Join an anonymous dm group with anyone else who is in it",
     async execute(Client, message, args, Discord, cmd){
         const users = new Map()
+        const letters = new Map([
+            ['Γ', false],
+            ['Δ', false],
+            ['Θ', false],
+            ['Λ', false],
+            ['Ξ', false],
+            ['Π', false],
+            ['Σ', false],
+            ['Φ', false],
+            ['Ψ', false],
+            ['Ω', false]
+        ])
         if (cmd === 'join'){
             if (message.guild === null) {
                 users.set(message.author.id, message.user);
