@@ -1,9 +1,12 @@
 const Client = require("../index.js")
+const {MessageAttachment} = require('discord.js')
 Client.on("message", async message => {
     if (message.channel.type !== "dm") return; // not in dm
     if (!users.has(message.author.id)) return; // user is not in chatroom
     if (message.content.startsWith("<")) return;
-    broadcastToGroup(users.get(message.channel.id),`**${users.get(message.author.id)}:** ` + message.content)
+    const image = new MessageAttachment('https://cdn.discordapp.com/attachments/607359984426156032/836237798461014016/image7.png')
+    broadcastToGroup(users.get(message.channel.id),`**${users.get(message.author.id)}:** ` + message.content, image)
+    console.log(image)
 })
 const users = new Map()
 const letters = new Map([
@@ -49,6 +52,7 @@ module.exports = {
     description: "Join an anonymous dm group with anyone else who is in it",
     async execute(Client, message, args, Discord, cmd){
         if (message.channel.type !== "dm") return message.reply("You must be in a DM to use this command");
+        if (users.has(message.author.id)) return message.channel.send('You are already in one');
         if (cmd === "join") {
             if (users.has(message.author.id)) return; // user is already in
             if (users.size >= 10) return; // full
