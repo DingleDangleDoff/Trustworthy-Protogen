@@ -3,6 +3,7 @@ module.exports = {
     name: 'user',
     description: "Gets info on a user",
     async execute(Client, message, args, Discord, cmd){
+        const { guild, channel } = message
         let user = message.author;
             if (args[0]) {
             if (message.mentions.users.size > 0) {
@@ -18,19 +19,20 @@ module.exports = {
         if (message.guild === null) {colour = '#000000'} else {colour = message.guild.me.displayColor}
         let botstatus = 'No'
         if (user.bot) botstatus = 'Yes'
+        const member = guild.members.cache.get(user.id)
         const embed = new MessageEmbed()
             .setAuthor(user.username, user.avatarURL({dynamic: true,size: 4096}), user.avatarURL({dynamic: true,size: 4096}))
             .setColor(colour)
             .setThumbnail(user.avatarURL({dynamic: true,size: 4096}))
             .addFields(
-                { name: 'User Info', value: `**Name: **${user.username}\n**ID: **${user.presence.userID}\n**Bot Account: **${botstatus}\n**Status: **${user.presence.status}\n**Account Made: **${user.createdAt}`, inline: true},
-                { name: 'Server Info', value: `**Nickname: **${user.displayName}\n**Joined: **${'n'}`, inline: true},
+                { name: 'User Info', value: `**Name: **${user.tag}\n**ID: **${user.presence.userID}\n**Bot Account: **${botstatus}\n**Status: **${user.presence.status}\n**Account Made: **${user.createdAt}`, inline: true},
+                { name: 'Server Info', value: `**Nickname: **${member.nickname || 'None'}\n**Joined: **${member.joinedAt || 'Has not joined'}`, inline: true},
                 { name: '\u200B', value: '\u200B' },                
                 { name: 'Activity', value: 'Activity thing'},
-                { name: 'Roles', value: 'their roles'},
+                //{ name: 'Roles', value: user.roles.map(r => `${r}`).join(' | ')},
             )
             .setTimestamp()
         message.channel.send(embed)
-        //console.log(user.presence.activities)
+        console.log(user.presence.activities.name)
     }
 }
