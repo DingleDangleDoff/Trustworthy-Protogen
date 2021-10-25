@@ -10,10 +10,10 @@ module.exports = {
         if (message.guild === null) {
             //let confession = args.join(" ");
             //let image = message.attachments.size > 0 ? message.attachments.array()[0].url : null
-            if (message.content.includes('https://cdn.discordapp.com/attachments/')) {
+            if (message.content.includes('https://cdn.discordapp.com/attachments/') || message.content.includes('https://media.discordapp.net/attachments/')) {
                 var image = args[0];
             } else var image = message.attachments.size > 0 ? message.attachments.array()[0].url : null;
-            if (message.content.includes('https://cdn.discordapp.com/attachments/')) {
+            if (message.content.includes('https://cdn.discordapp.com/attachments/') || message.content.includes('https://media.discordapp.net/attachments/')) {
                 args.shift()
                 var confession = args.join(" ");
             } else var confession = args.join(" ");
@@ -56,7 +56,7 @@ module.exports = {
                             confessionChannel.send(embed)
                             preview.setColor('#00FF00');
                             confirmMessage.edit(preview);
-                            message.channel.send('Confession sent');
+                            message.channel.send('Confession sent (#' + file.sfw + ')');
                         break;
                         case '🔞':
                             collector.stop();
@@ -68,7 +68,7 @@ module.exports = {
                             nsfwConfessionChannel.send(embed)
                             preview.setColor('#00FF00');
                             confirmMessage.edit(preview);
-                            message.channel.send('Confession sent as NSFW');
+                            message.channel.send('Confession sent as NSFW (#' + file.nsfw + ')');
                         break;
                         case '❌':
                             collector.stop();
